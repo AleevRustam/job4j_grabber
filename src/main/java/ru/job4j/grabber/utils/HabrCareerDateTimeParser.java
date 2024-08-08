@@ -12,7 +12,6 @@ public class HabrCareerDateTimeParser implements DateTimeParser {
         try {
             return (parse == null || parse.isEmpty()) ? null : LocalDateTime.parse(parse, formatter);
         } catch (DateTimeParseException e) {
-            e.printStackTrace();
             return null;
         }
     }

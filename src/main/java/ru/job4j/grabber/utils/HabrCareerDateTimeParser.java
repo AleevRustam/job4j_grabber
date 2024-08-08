@@ -1,23 +1,19 @@
 package ru.job4j.grabber.utils;
 
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class HabrCareerDateTimeParser implements DateTimeParser {
 
     @Override
     public LocalDateTime parse(String parse) {
-        if (parse == null || parse.isEmpty()) {
-            return null;
-        }
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         try {
-            return LocalDateTime.parse(parse, formatter);
-        } catch (DateTimeException e) {
+            return (parse == null || parse.isEmpty()) ? null : LocalDateTime.parse(parse, formatter);
+        } catch (DateTimeParseException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 }

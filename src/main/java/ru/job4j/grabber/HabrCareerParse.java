@@ -16,6 +16,11 @@ public class HabrCareerParse {
     public static final int NUMBER_OF_PAGES = 5;
 
     public static void main(String[] args) throws IOException {
+        HabrCareerParse habrCareerParse = new HabrCareerParse();
+        habrCareerParse.parseVacancies();
+    }
+
+    private void parseVacancies() throws IOException {
         for (int pageNumber = 1; pageNumber <= NUMBER_OF_PAGES; pageNumber++) {
             String fullLink = "%s%s%d%s".formatted(SOURCE_LINK, PREFIX, pageNumber, SUFFIX);
             Connection connection = Jsoup.connect(fullLink);
@@ -29,9 +34,19 @@ public class HabrCareerParse {
                 String vacancyName = titleElement.text();
                 String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
                 String date = dateElementValue.attr("datetime");
-                System.out.printf("%s %s %s%n", vacancyName, link, date);
+                String description = retrieveDescription(link);
+                System.out.printf("%s%nLink: %s%nCreated: %s%nDescription: %s%n%n", vacancyName, link, date, description);
             });
         }
+    }
 
+    private String retrieveDescription(String link) {
+        try {
+            Document document = Jsoup.connect(link).get();
+            Element descriptionElement = document.select(".vacancy-description__text").first();
+            return descriptionElement != null ? descriptionElement.text() : "Description not found";
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

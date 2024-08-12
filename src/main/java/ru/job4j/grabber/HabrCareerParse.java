@@ -13,10 +13,9 @@ import java.util.List;
 
 public class HabrCareerParse implements Parse {
 
-    private static final String SOURCE_LINK = "https://career.habr.com";
     public static final String PREFIX = "/vacancies?page=";
     public static final String SUFFIX = "&q=Java%20developer&type=all";
-    public static final int NUMBER_OF_PAGES = 5;
+    public static final int NUMBER_OF_PAGES = 3;
     private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
@@ -48,7 +47,7 @@ public class HabrCareerParse implements Parse {
                     Element dateElement = row.select(".vacancy-card__date").first();
                     Element dateElementValue = dateElement.child(0);
                     String vacancyName = titleElement.text();
-                    String vacancyLink = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+                    String vacancyLink = String.format("%s%s", link, linkElement.attr("href"));
                     String date = dateElementValue.attr("datetime");
                     String description = retrieveDescription(vacancyLink);
                     posts.add(new Post(

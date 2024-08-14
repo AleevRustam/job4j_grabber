@@ -6,6 +6,7 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -80,11 +81,22 @@ public class Grabber implements Grab {
             try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
                 while (!server.isClosed()) {
                     Socket socket = server.accept();
-                    try (OutputStream out = socket.getOutputStream()) {
-                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                    try (OutputStream out = socket.getOutputStream();
+                         OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+                         BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
+
+                        bufferedWriter.write("HTTP/1.1 200 OK\r\n");
+                        bufferedWriter.write("Content-Type: text/html; charset=UTF-8\r\n\r\n");
+
+                        bufferedWriter.write("<html><body><pre>\n");
+
                         for (Post post : store.getAll()) {
-                            out.write(post.toString().getBytes());
-                            out.write(System.lineSeparator().getBytes());
+                            bufferedWriter.write("id : " + post.getId() + "<br>\n");
+                            bufferedWriter.write("title : " + post.getTitle() + "<br>\n");
+                            bufferedWriter.write("link : " + post.getLink() + "<br>\n");
+                            bufferedWriter.write("description : " + post.getDescription() + "<br>\n");
+                            bufferedWriter.write("created : " + post.getCreated() + "<br>\n");
+                            bufferedWriter.write("<br>\n");
                         }
                     } catch (IOException io) {
                         io.printStackTrace();

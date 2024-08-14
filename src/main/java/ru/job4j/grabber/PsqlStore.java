@@ -24,12 +24,14 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
-        String sql = "INSERT INTO post (link, created) "
-                + "VALUES (?, ?) "
+        String sql = "INSERT INTO post (title, link, created, description) "
+                + "VALUES (?, ?, ?, ?) "
                 + "ON CONFLICT (link) DO UPDATE SET created = EXCLUDED.created RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, post.getLink());
-            statement.setTimestamp(2, Timestamp.valueOf(post.getCreated()));
+            statement.setString(1, post.getTitle());
+            statement.setString(2, post.getLink());
+            statement.setTimestamp(3, Timestamp.valueOf(post.getCreated()));
+            statement.setString(4, post.getDescription());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     post.setId(resultSet.getInt("id"));
@@ -75,8 +77,10 @@ public class PsqlStore implements Store, AutoCloseable {
     private Post createPost(ResultSet resultSet) throws SQLException {
         return new Post(
                 resultSet.getInt("id"),
+                resultSet.getString("title"),
                 resultSet.getString("link"),
-                resultSet.getTimestamp("created").toLocalDateTime()
+                resultSet.getTimestamp("created").toLocalDateTime(),
+                resultSet.getString("description")
         );
     }
 

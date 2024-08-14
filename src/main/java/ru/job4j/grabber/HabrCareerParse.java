@@ -51,8 +51,10 @@ public class HabrCareerParse implements Parse {
                     String description = retrieveDescription(vacancyLink);
                     posts.add(new Post(
                             0,
+                            vacancyName,
                             vacancyLink,
-                            dateTimeParser.parse(date)
+                            dateTimeParser.parse(date),
+                            description
                     ));
                 });
             } catch (IOException e) {
